@@ -9,7 +9,7 @@ public class Main {
                 + "-1 - Encerra o teste\n"
                 + "0 - Imprime a Árvore em ordem\n"
                 + "1 - Insere um dado valor\n"
-//                + "2 - Remove um dado valor\n"
+                + "2 - Remove um dado valor\n"
                 + "_________________________\n");
 
         Scanner leia = new Scanner(System.in);
@@ -31,7 +31,7 @@ public class Main {
                     avl.insere(valor);
                     break;
                 case 2:
-//                    avl.remover(valor);
+                    avl.remove(valor);
                     break;
             }
         }

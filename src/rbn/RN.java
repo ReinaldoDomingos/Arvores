@@ -47,6 +47,100 @@ public class RN<T extends Comparable<T>> {
         }
     }
 
+    private No<T> getIrmao(No<T> ptr) {
+        No<T> pai = ptr.getPai();
+        if (pai.getEsq().equals(ptr)) {
+            return pai.getDir();
+        } else {
+            return pai.getEsq();
+        }
+    }
+
+    public void remove(T valor) {
+        No<T> buscado = busca(valor);
+        if (buscado.getDir().getValor() == null && buscado.getEsq().getValor() == null) {
+            if (buscado.equals(this.raiz)) {// Nó raiz
+                this.raiz = null;
+            } else if (buscado.getCor() == RUBRO) {//Nó Rubro
+                remove(buscado);
+            } else {// Nó folha negro
+                No<T> pai = buscado.getPai();
+                if (pai.getDir() != buscado && pai.getDir().getCor() == RUBRO) {
+                    caso1(buscado);
+                    return;
+                }
+                if (pai.getDir().getCor() == NEGRO && pai.getEsq().getCor() == NEGRO) {
+                    caso2(buscado);
+                }
+            }
+        } else {
+            No<T> antecessor = menorDir(buscado);
+            buscado.setValor(antecessor.getValor());
+            if (buscado.getCor() == RUBRO && antecessor.getCor() == RUBRO) {
+                remove(antecessor);
+                return;
+            }
+            if (buscado.getCor() == RUBRO && antecessor.getCor() == NEGRO) {
+                No<T> esq = antecessor.getEsq();
+                No<T> dir = antecessor.getDir();
+                if (esq.getCor() == RUBRO || dir.getCor() == RUBRO) {
+                    remove(antecessor);
+                    esq.setCor(NEGRO);
+                    dir.setCor(NEGRO);
+                }
+            }
+        }
+    }
+
+    private void caso1(No<T> x) {
+        No<T> v = x.getPai();
+        No<T> w = v.getDir();
+        int corPai = v.getCor();
+        int corIrmao = v.getDir().getCor();
+
+        remove(x);
+        rotacaoEsq(v);
+
+        v.setCor(corIrmao);
+        w.setCor(corPai);
+        balanceamento(v);
+
+    }
+
+    private void caso2(No<T> x) {
+        No<T> v = x.getPai();
+        No<T> w = getIrmao(x);
+        remove(x);
+        w.setCor(RUBRO);
+    }
+
+    private void remove(No<T> ptr) {
+        No<T> pai = ptr.getPai();
+        if (pai.getEsq().equals(ptr)) {
+            pai.setEsq(ptr.getEsq());
+        } else {
+            pai.setDir(ptr.getDir());
+        }
+    }
+
+    private void alterarCor(No<T> buscado) {
+        if (buscado.getCor() == RUBRO) {
+            buscado.setCor(NEGRO);
+        } else {
+            buscado.setCor(RUBRO);
+        }
+    }
+
+    public No<T> menorDir(No<T> no) {
+        No<T> ant = null;
+        no = no.getDir();
+        while (no.getValor() != null) {
+            ant = no;
+            no = no.getEsq();
+        }
+        return ant;
+    }
+
     public void rotacaoDir(No<T> x) {
         No<T> y = x.getEsq();
         x.setEsq(y.getDir());
@@ -83,23 +177,6 @@ public class RN<T extends Comparable<T>> {
         x.setPai(y);
     }
 
-    /*      rotacaoEsq(x){
-        y = x.dir;
-        x.ddir = y.esq;
-        y.esq.pai = x;
-        y.pai = x.pai
-        
-        if(x.pai == null)
-            raiz = y;
-        else if(x.pai.dir == x)
-            x.pai.dir = y;
-        else
-            x.pai.esq = y;
-        
-        y.esq = x;
-        x.pai = y;
-        }
-     */
     public void balanceamento(No<T> x) {
 //        while () {
         if (x.getPai() != null && x.getPai().getCor() == RUBRO && x.getPai().getPai() != null) {
@@ -161,3 +238,80 @@ public class RN<T extends Comparable<T>> {
     }
 
 }
+
+/*
+1 30
+1 21
+1 71
+1 20
+1 25
+1 47
+1 86
+1 11
+1 77 
+1 87
+
+1 30
+1 21
+1 80
+1 20
+1 25
+1 71
+1 86
+1 11
+
+
+1 33 
+1 15 
+1 47 
+1 10
+1 20
+1 38
+1 51
+1 5
+1 18
+1 36
+1 39
+1 49
+
+1 33
+1 20
+1 40
+1 39
+1 41
+1 42
+2 42
+
+1 33
+1 30
+1 40
+1 11
+2 11
+
+1 33
+1 15
+1 47
+1 10
+1 20
+1 38
+1 51
+1 5
+1 18
+1 36
+1 39
+1 49
+
+1 33
+1 15
+1 51
+1 10
+1 20
+1 38
+1 47
+1 5
+1 18
+1 36
+1 39
+1 53
+
+ */
