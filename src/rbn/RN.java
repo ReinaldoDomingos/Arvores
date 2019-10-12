@@ -58,29 +58,29 @@ public class RN<T extends Comparable<T>> {
 
     public void remove(T valor) {
         No<T> buscado = busca(valor);
-        if (buscado.getDir().getValor() == null && buscado.getEsq().getValor() == null) {
+        if (buscado.getDir().getValor() == null && buscado.getEsq().getValor() == null) {//Nó Folha
             if (buscado.equals(this.raiz)) {// Nó raiz
                 this.raiz = null;
-            } else if (buscado.getCor() == RUBRO) {//Nó Rubro
+            } else if (buscado.getCor() == RUBRO) {//Nó Folha Rubro
                 remove(buscado);
             } else {// Nó folha negro
                 No<T> pai = buscado.getPai();
-                if (pai.getDir() != buscado && pai.getDir().getCor() == RUBRO) {
+                if (pai.getDir() != buscado && pai.getDir().getCor() == RUBRO) {//Pai Rubro
                     caso1(buscado);
                     return;
                 }
-                if (pai.getDir().getCor() == NEGRO && pai.getEsq().getCor() == NEGRO) {
+                if (pai.getDir().getCor() == NEGRO && pai.getEsq().getCor() == NEGRO) {//Nó negro e Irmão Negro
                     caso2(buscado);
                 }
             }
-        } else {
+        } else {//Nó com dois filhos
             No<T> antecessor = menorDir(buscado);
             buscado.setValor(antecessor.getValor());
-            if (buscado.getCor() == RUBRO && antecessor.getCor() == RUBRO) {
+            if (buscado.getCor() == RUBRO && antecessor.getCor() == RUBRO) {//Nó Rubro e Antecessor Rubro
                 remove(antecessor);
                 return;
             }
-            if (buscado.getCor() == RUBRO && antecessor.getCor() == NEGRO) {
+            if (buscado.getCor() == RUBRO && antecessor.getCor() == NEGRO) {//Nó Rubro  e Antecessor Rubro 
                 No<T> esq = antecessor.getEsq();
                 No<T> dir = antecessor.getDir();
                 if (esq.getCor() == RUBRO || dir.getCor() == RUBRO) {
