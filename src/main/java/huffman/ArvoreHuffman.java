@@ -41,7 +41,7 @@ public class ArvoreHuffman {
     }
 
     String getTextoCabecalho() {
-        return textoCabecalho + "\r\n";
+        return textoCabecalho;
     }
 
     void compactar() {
@@ -54,8 +54,8 @@ public class ArvoreHuffman {
         System.out.println("Texto em binário após compactar:" + textoBinarioCompatado.length() + "\n"
                 + textoBinarioCompatado + "\n");
         System.out.println();
-        escreverEmBinario(textoCabecalho + "\r" + textoBinarioCompatado, "binario.txt");
-        escrever(textoCabecalho + "\r" + textoBinarioCompatado, "legivel.txt");
+        escreverEmBinario(textoCabecalho + "\n" + textoBinarioCompatado, "binario.txt");
+        escrever(textoCabecalho + "\n" + textoBinarioCompatado, "legivel.txt");
     }
 
     void descompactar(String nomeArquivo) {
