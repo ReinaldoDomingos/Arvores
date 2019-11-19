@@ -73,14 +73,23 @@ public class No<T> {
 
     @Override
     public String toString() {
-//        [87 "Black"] - Filhos: 86 | 90 - Pai: 85  
-        String cor_formatada = (this.cor == 0) ? "Red" : "Black";
+        String cor_formatada = (this.cor == 0) ? "Red  " : "Black";
         Object valorPai = null;
         if (pai != null) {
             valorPai = pai.getValor();
         }
-        return "[" + String.valueOf(valor) + " \"" + cor_formatada + "\"] - Filhos: "
-                + String.valueOf(esq.valor) + " | " + String.valueOf(dir.valor)
-                + " - Pai: " + valorPai;
+        String valEsq, valDir;
+        if (esq.valor == null) {
+            valEsq = "Sentinela";
+        } else {
+            valEsq = esq.valor.toString() + "        ";
+        }
+        if (dir.valor == null) {
+            valDir = "Sentinela";
+        } else {
+            valDir = dir.valor.toString() + "           ";
+        }
+        return "[" + String.valueOf(valor) + " \"" + cor_formatada + "\"] - Filhos: " + String.valueOf(valEsq) + " | "
+                + String.valueOf(valDir) + " - Pai: " + valorPai;
     }
 }
