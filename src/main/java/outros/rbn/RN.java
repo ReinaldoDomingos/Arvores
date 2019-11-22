@@ -1,13 +1,15 @@
-package rbn;
+package outros.rbn;
 
 public class RN<T extends Comparable<T>> {
 
     public static int RUBRO = 0;
     public static int NEGRO = 1;
-    No<T> raiz, sentinela;
+    No<T> raiz;
+    No<T> sentinela;
 
     public RN() {
         sentinela = new No<>();
+        sentinela.setCor(NEGRO);
         raiz = sentinela;
     }
 
@@ -44,12 +46,16 @@ public class RN<T extends Comparable<T>> {
 
     private void inserir(No<T> no, T valor) {
         if (no.getPai() == null) {
-            if (no.getEsq().equals(sentinela) && no.getDir().equals(sentinela)) {
-                No novo = new No<>(valor);
-                novo.setEsq(sentinela);
-                novo.setDir(sentinela);
-                novo.setPai(no);
-                no.setEsq(novo);
+            if (valor.compareTo(no.getValor()) == -1) {
+                if (no.getEsq().equals(sentinela) && no.getDir().equals(sentinela)) {
+                    No novo = new No<>(valor);
+                    novo.setEsq(sentinela);
+                    novo.setDir(sentinela);
+                    novo.setPai(no);
+                    no.setEsq(novo);
+                } else {
+                    inserir(no.getEsq(), valor);
+                }
             } else if (no.getDir().equals(sentinela)) {
                 No novo = new No<>(valor);
                 novo.setEsq(sentinela);
@@ -64,24 +70,175 @@ public class RN<T extends Comparable<T>> {
                 }
             }
         } else {
-            No pai = no.getPai();
-            if (pai.getEsq().equals(no)) {
-                // No tio = no.getPai();
-                System.out.println("Aqui2");
-                if (pai.getCor() == RUBRO) {
-/*                     No novo = new No<>(valor);
-                    novo.setEsq(sentinela);
-                    novo.setDir(sentinela);
+            No novo = new No<>(valor);
+            novo.setEsq(sentinela);
+            novo.setDir(sentinela);
+            if (valor.compareTo(no.getValor()) == -1) {
+                if (no.getEsq().equals(sentinela) && no.getDir().equals(sentinela)) {
+                    no.setEsq(novo);
                     novo.setPai(no);
+                    balancear(novo);
+                } else {
+                    inserir(no.getEsq(), valor);
+                }
+            } else {
+                if (no.getDir().equals(sentinela)) {
                     no.setDir(novo);
- */                }
-            } else if (pai.getDir().equals(no)) {
-                System.out.println("Aqui2");
-
+                    novo.setPai(no);
+                    balancear(novo);
+                } else {
+                    inserir(no.getDir(), valor);
+                }
             }
         }
+    }
 
-        // System.out.println(no);
+    private void balancear(No no) {
+        No pai = no.getPai();
+        No tio = getIrmao(pai);
+        if (pai.equals(raiz)) {
+            return;
+        }
+        if (no.getCor() == RUBRO && pai.getCor() == RUBRO && tio.getCor() == RUBRO) {
+            pai.setCor(NEGRO);
+            tio.setCor(NEGRO);
+            pai.getPai().setCor(RUBRO);
+            balancear(pai);
+        } else if (pai.getCor() == RUBRO && tio.getCor() == RUBRO) {
+            pai.setCor(NEGRO);
+            tio.setCor(NEGRO);
+            pai.getPai().setCor(RUBRO);
+            balancear(pai);
+        } else if (no.getCor() == RUBRO && pai.getCor() == RUBRO && tio.getCor() == NEGRO) {
+            pai.getPai().setCor(RUBRO);
+            if (pai.equals(pai.getPai().getEsq())) {
+                if (no.equals(pai.getEsq())) {
+                    rodarDir(no.getPai());
+                } else {
+                    rodarEsq(no);
+
+                    pai = no.getPai();
+                    No avo = pai.getPai();
+                    avo.setEsq(no);
+                    no.setPai(avo);
+                    pai.setEsq(no.getDir());
+                    no.getDir().setPai(pai.getEsq());
+                    no.setDir(pai);
+                    pai.setPai(no);
+                    no.setCor(NEGRO);
+                }
+            } else if (pai.equals(pai.getPai().getDir())) {
+                if (no.equals(pai.getDir())) {
+                    rodarEsq(no.getPai());
+                } else {
+                    rodarDir(no);
+
+                    pai = no.getPai();
+                    No avo = pai.getPai();
+                    avo.setDir(no);
+                    no.setPai(avo);
+                    pai.setDir(no.getEsq());
+                    no.getEsq().setPai(pai.getDir());
+                    no.setEsq(pai);
+                    pai.setPai(no);
+                    no.setCor(NEGRO);
+                }
+            }
+        } else if (pai.getCor() == RUBRO && pai.getPai().getCor() == RUBRO) {
+            if (no.getCor() == NEGRO && pai.getPai().getDir().equals(pai) && pai.getPai().getEsq().getCor() == NEGRO) {
+                No avo = pai.getPai();
+                No bisavo = avo.getPai();
+                if (bisavo.getEsq().equals(avo)) {
+                    bisavo.setEsq(pai);
+                    pai.setPai(bisavo);
+                    avo.setDir(pai.getEsq());
+                    avo.getDir().setPai(avo);
+                    pai.setEsq(avo);
+                    avo.setPai(pai);
+                    balancear(no.getPai());
+                } else {
+                    System.out.println("outo jeito");
+                }
+            } else if (pai.getPai().getDir().equals(pai) && pai.getPai().getEsq().getCor() == NEGRO) {
+                rodarEsq(pai);
+                no.getPai().getPai().setCor(NEGRO);
+                no.getPai().getPai().getPai().setCor(RUBRO);
+                rodarDir(no.getPai().getPai());
+            } else if (pai.getPai().getEsq().equals(pai) && pai.getPai().getDir().getCor() == NEGRO) {
+                pai = no.getPai();
+                No avo = pai.getPai();
+                No bisavo = avo.getPai();
+                if (bisavo.getDir().equals(avo)) {
+                    bisavo.setDir(pai);
+                    pai.setPai(bisavo);
+                    avo.setEsq(pai.getDir());
+                    avo.getEsq().setPai(avo);
+                    pai.setDir(avo);
+                    avo.setPai(pai);
+                    balancear(no.getPai());
+                } else {
+                    System.out.println("outo jeito2");
+                }
+            }
+        }
+    }
+
+    void rodarEsq(No<T> no) {
+        No pai = no.getPai();
+        No avo = pai.getPai();
+        if (!pai.equals(raiz)) {
+            avo.setEsq(no);
+            no.setPai(avo);
+            pai.setDir(no.getDir());
+            no.getEsq().setPai(pai);
+            no.setEsq(pai);
+            pai.setPai(no);
+        } else {
+//            no.setDir(no.getEsq());
+//            no.getEsq().setPai(raiz);
+            raiz = no;
+            raiz.setPai(null);
+            pai.setDir(raiz.getEsq());
+            raiz.getEsq().setPai(pai);
+            pai.setPai(raiz);
+            raiz.setEsq(pai);
+        }
+    }
+
+    void rodarEsqbk(No<T> no
+    ) {
+        No pai = no.getPai();
+        No avo = pai.getPai();
+        if (avo != null) {
+            avo.setEsq(no);
+        }
+        no.setPai(avo);
+        pai.setDir(no.getEsq());
+        no.getEsq().setPai(pai);
+        no.setEsq(pai);
+        pai.setPai(no);
+    }
+
+    void rodarDir(No<T> no) {
+        No pai = no.getPai();
+        No avo = pai.getPai();
+        if (!pai.equals(raiz)) {
+            avo.setDir(no);
+            no.setPai(avo);
+            pai.setEsq(no.getEsq());
+            no.getDir().setPai(pai);
+            no.setDir(pai);
+            pai.setPai(no);
+        } else {
+//            no.setDir(no.getEsq());
+//            no.getEsq().setPai(raiz);
+            raiz = no;
+            raiz.setPai(null);
+            pai.setEsq(raiz.getDir());
+            raiz.getDir().setPai(pai);
+            pai.setPai(raiz);
+            raiz.setDir(pai);
+        }
     }
 
     public void insere(T valor) {
@@ -107,6 +264,9 @@ public class RN<T extends Comparable<T>> {
 
     private No<T> getIrmao(No<T> ptr) {
         No<T> pai = ptr.getPai();
+        if (pai == null) {
+            return null;
+        }
         if (pai.getEsq().equals(ptr)) {
             return pai.getDir();
         } else {
@@ -246,10 +406,6 @@ public class RN<T extends Comparable<T>> {
                     avo.setCor(RUBRO);
                     No<T> bisavo = avo.getPai();
                     if (bisavo != null && bisavo.getCor() == RUBRO && avo.getCor() == RUBRO) {
-                        System.out.println("no " + x);
-                        System.out.println("pai " + x.getPai());
-                        System.out.println("avo " + x.getPai().getPai());
-                        System.out.println("bisavo " + x.getPai().getPai().getPai());
                         rotacaoEsq(avo);
                     }
                 } else {

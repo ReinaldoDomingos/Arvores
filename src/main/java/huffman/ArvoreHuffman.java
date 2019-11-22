@@ -23,13 +23,76 @@ public class ArvoreHuffman {
     public ArvoreHuffman() {
     }
 
+    public void contarFrequencias() {
+        for (char c : textoInicial.toCharArray()) {
+            frequenciaLetras[c]++;
+        }
+    }
+
     void criar() {
         gerarHeap();
         System.out.println("Heap " + getHeap());
         System.out.println();
         criarArvoreHuffman();
         gerarTabelaCodigos();
+        System.out.println(tabelaDeCodigos);
         gerarTextoBinarioCompatado();
+    }
+
+    No criarArvoreHuffman() {
+        // System.out.println(list);
+        while (heapTabelaDeCodigos.size() > 1) {
+            No a = heapTabelaDeCodigos.remove(heapTabelaDeCodigos.size() - 1);
+            No b = heapTabelaDeCodigos.remove(heapTabelaDeCodigos.size() - 1);
+            No novo = new No(b, a);
+            add(novo);
+        }
+        arvoreHuffman = heapTabelaDeCodigos.get(0);
+        return arvoreHuffman;
+    }
+
+    void gerarTabelaCodigos() {
+        ArrayList<No> fila = new ArrayList<>();
+
+        // Percurso em nivel
+        fila.add(arvoreHuffman);
+        while (!fila.isEmpty()) {
+            No atual = fila.remove(0);
+            if (atual.letra.length() == 1) {
+                tabelaCodificadaEmNivel.add(atual);
+            }
+            if (atual.esq != null) {
+                fila.add(atual.esq);
+            }
+            if (atual.dir != null) {
+                fila.add(atual.dir);
+            }
+        }
+
+        setCodigoHuffman();
+    }
+
+    void setCodigoHuffman() {
+        for (int i = 0; i < tabelaCodificadaEmNivel.size(); i++) {
+            String letra = tabelaCodificadaEmNivel.get(i).letra;
+            setCodigoHuffman(letra, "");
+        }
+    }
+
+    void setCodigoHuffman(String letra, String codigo) {
+        No ptr = arvoreHuffman;
+        while (!ptr.letra.equals(letra)) {
+            if (ptr.esq != null && ptr.esq.letra.contains(letra)) {
+                codigo += "1";
+                ptr = ptr.esq;
+            } else if (ptr.dir != null && ptr.dir.letra.contains(letra)) {
+                codigo += "0";
+                ptr = ptr.dir;
+            }
+        }
+        ptr.cod = codigo;
+        tabelaDeCodigos += ptr.letra + " " + ptr.cod + "\n";
+        heapEmOrdem.add(ptr);
     }
 
     public void gerarTextoBinarioCompatado() {
@@ -38,10 +101,6 @@ public class ArvoreHuffman {
                 textoBinarioCompatado += no.cod;
             }
         }
-    }
-
-    String getTextoCabecalho() {
-        return textoCabecalho;
     }
 
     void compactar() {
@@ -54,12 +113,32 @@ public class ArvoreHuffman {
         System.out.println("Texto em binário após compactar:" + textoBinarioCompatado.length() + "\n"
                 + textoBinarioCompatado + "\n");
         System.out.println();
-        escreverEmBinario(textoCabecalho + "\n" + textoBinarioCompatado, "binario.txt");
-        escrever(textoCabecalho + "\n" + textoBinarioCompatado, "legivel.txt");
+        escreverEmBinario(textoCabecalho + "\r" + textoBinarioCompatado, "binario.txt");
+        escrever(textoCabecalho + "\r" + textoBinarioCompatado, "legivel.txt");
+    }
+
+    public void add(No novo) {
+        int tamanho = heapTabelaDeCodigos.size();
+        int pos = busca(novo.freq);
+        if (tamanho == 0 || novo.freq < heapTabelaDeCodigos.get(tamanho - 1).freq) {
+            heapTabelaDeCodigos.add(novo);
+        } else {
+            if (novo.cod != null) {
+                heapTabelaDeCodigos.add(pos + 1, novo);
+            } else {
+                if (pos > 0 && heapTabelaDeCodigos.get(pos - 1).freq <= novo.freq) {
+                    heapTabelaDeCodigos.add(pos - 1, novo);
+                } else {
+                    heapTabelaDeCodigos.add(pos, novo);
+                }
+            }
+        }
     }
 
     void descompactar(String nomeArquivo) {
         buildHuffmanCompactada(nomeArquivo);
+        System.out.println("");
+//        System.out.println(tabelaDeCodigos);
     }
 
     private void buildHuffmanCompactada(String nomeArquivo) {
@@ -217,78 +296,8 @@ public class ArvoreHuffman {
         return heapTabelaDeCodigos;
     }
 
-    public void add(No novo) {
-        int tamanho = heapTabelaDeCodigos.size();
-        int pos = busca(novo.freq);
-        if (tamanho == 0 || novo.freq < heapTabelaDeCodigos.get(tamanho - 1).freq) {
-            heapTabelaDeCodigos.add(novo);
-        } else {
-            if (novo.cod != null) {
-                heapTabelaDeCodigos.add(pos + 1, novo);
-            } else {
-                if (pos > 0 && heapTabelaDeCodigos.get(pos - 1).freq <= novo.freq) {
-                    heapTabelaDeCodigos.add(pos - 1, novo);
-                } else {
-                    heapTabelaDeCodigos.add(pos, novo);
-                }
-            }
-        }
-    }
-
-    void gerarTabelaCodigos() {
-        ArrayList<No> fila = new ArrayList<>();
-
-        // Percurso em nivel
-        fila.add(arvoreHuffman);
-        while (!fila.isEmpty()) {
-            No atual = fila.remove(0);
-            if (atual.letra.length() == 1) {
-                tabelaCodificadaEmNivel.add(atual);
-            }
-            if (atual.esq != null) {
-                fila.add(atual.esq);
-            }
-            if (atual.dir != null) {
-                fila.add(atual.dir);
-            }
-        }
-
-        setCodigoHuffman();
-    }
-
-    No criarArvoreHuffman() {
-        // System.out.println(list);
-        while (heapTabelaDeCodigos.size() > 1) {
-            No a = heapTabelaDeCodigos.remove(heapTabelaDeCodigos.size() - 1);
-            No b = heapTabelaDeCodigos.remove(heapTabelaDeCodigos.size() - 1);
-            No novo = new No(b, a);
-            add(novo);
-        }
-        arvoreHuffman = heapTabelaDeCodigos.get(0);
-        return arvoreHuffman;
-    }
-
-    void setCodigoHuffman() {
-        for (int i = 0; i < tabelaCodificadaEmNivel.size(); i++) {
-            String letra = tabelaCodificadaEmNivel.get(i).letra;
-            setCodigoHuffman(letra, "");
-        }
-    }
-
-    void setCodigoHuffman(String letra, String codigo) {
-        No ptr = arvoreHuffman;
-        while (!ptr.letra.equals(letra)) {
-            if (ptr.esq != null && ptr.esq.letra.contains(letra)) {
-                codigo += "1";
-                ptr = ptr.esq;
-            } else if (ptr.dir != null && ptr.dir.letra.contains(letra)) {
-                codigo += "0";
-                ptr = ptr.dir;
-            }
-        }
-        ptr.cod = codigo;
-        tabelaDeCodigos += ptr.letra + " " + ptr.cod + "\n";
-        heapEmOrdem.add(ptr);
+    String getTextoCabecalho() {
+        return textoCabecalho + "\r\n";
     }
 
     int busca(char c) {
@@ -342,12 +351,6 @@ public class ArvoreHuffman {
         }
     }
 
-    public void contarFrequencias() {
-        for (char c : textoInicial.toCharArray()) {
-            frequenciaLetras[c]++;
-        }
-    }
-
     public String getBinarioFormatado(int key, int tamanho) {
         String s = "" + (int) key;
 
@@ -378,9 +381,9 @@ public class ArvoreHuffman {
 
         @Override
         public String toString() {
-            // return letra + "(" + freq + ")";
+             return letra + "(" + freq + ")";
             // return freq + " " + letra + " " + cod;
-            return letra;
+//            return letra;
         }
     }
 }

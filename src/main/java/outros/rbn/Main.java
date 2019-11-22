@@ -1,4 +1,4 @@
-package rbn.remocao;
+package outros.rbn;
 
 import java.util.Scanner;
 
@@ -129,23 +129,3 @@ public class Main {
 0
 -1
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,8 @@
-package rbn;
+package outros.rbn;
 
-import static rbn.RN.NEGRO;
-import static rbn.RN.RUBRO;
+import static outros.rbn.RN.NEGRO;
+import static outros.rbn.RN.RUBRO;
+
 
 public class No<T> {
 

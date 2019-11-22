@@ -2,6 +2,7 @@ package rbn.remocao;
 
 import static rbn.remocao.RN.NEGRO;
 import static rbn.remocao.RN.RUBRO;
+import static rbn.remocao.RN.sentinela;
 
 public class No<T> {
 
@@ -73,18 +74,18 @@ public class No<T> {
 
     @Override
     public String toString() {
-        String cor_formatada = (this.cor == 0) ? "Red  " : "Black";
+        String cor_formatada = (this.cor == 0) ? "RED  " : "BLACK";
         Object valorPai = null;
         if (pai != null) {
             valorPai = pai.getValor();
         }
         String valEsq, valDir;
-        if (esq.valor == null) {
+        if (esq == null || esq.equals(sentinela)) {
             valEsq = "Sentinela";
         } else {
             valEsq = esq.valor.toString() + "        ";
         }
-        if (dir.valor == null) {
+        if (dir == null || dir.equals(sentinela)) {
             valDir = "Sentinela";
         } else {
             valDir = dir.valor.toString() + "           ";
