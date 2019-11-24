@@ -1,4 +1,4 @@
-package b;
+package outros.b;
 
 import java.util.ArrayList;
 
