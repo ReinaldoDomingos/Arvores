@@ -1,7 +1,6 @@
 package grafos.arvores.b;
 
 import java.util.ArrayList;
-import jdk.nashorn.api.tree.ForInLoopTree;
 
 public class B<T extends Comparable<T>> {
 
