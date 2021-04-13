@@ -4,3 +4,11 @@ nbproject/
 build.xml
 manifest.mf
 /target/
+.idea/
+.settings/
+.vscode/
+.project
+.classpath
+/.idea/
+/.settings/
+/.vscode/
