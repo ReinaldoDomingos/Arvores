@@ -11,4 +11,4 @@ manifest.mf
 .classpath
 /.idea/
 /.settings/
-/.vscode/
+.vscode/
